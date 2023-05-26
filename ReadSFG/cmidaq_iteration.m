@@ -4135,8 +4135,8 @@ if ~isnumeric(filenameall)
             handles.current_dataC = [];
             handles.current_dataD = [];
             attA = [];
-            rawdata_all = double(h5read(filename,'/Data/Camera/Image ROI1'));
-            accum = squeeze(double(h5read(filename,'/Data/Camera/Device Settings/Readout Control/Accumulations')));
+            rawdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
+            accum = squeeze(double(h5read(file,'/Data/Camera/Device Settings/Readout Control/Accumulations')));
             nofwaveforms = accum(1);
             spectra_singlecycle = squeeze(rawdata_all);
             [nofcycle, records, recordsize] = size(spectra_singlecycle);
@@ -4152,7 +4152,7 @@ if ~isnumeric(filenameall)
             handles.current_dataA = zeros(nofrecords*nofrepes,recordsize);
             handles.current_dataC = zeros(nofrecords*nofrepes,recordsize);
             handles.current_dataB = zeros(nofrecords*nofrepes,recordsize);
-            WL_raw = h5read(filename,'/Data/Spectrograph/Module Data/ROIs Wavelengths');
+            WL_raw = h5read(file,'/Data/Spectrograph/Module Data/ROIs Wavelengths');
             WL_wavelength = WL_raw.Wavelengths;
             WL_data = WL_wavelength(1,1,1,1);
             handles.x = (WL_data{1,1})';
@@ -4298,5 +4298,5 @@ end
 xlabel(xname)%,'FontSize',20)
 ylabel(yname)%,'FontSize',20)
 grid on;
-refresh_legend;
+% refresh_legend;
 set(handles.textStatus, 'string', sprintf('Plot all of traces'))
