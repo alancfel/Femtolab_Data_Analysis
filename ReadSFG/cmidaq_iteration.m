@@ -4139,7 +4139,12 @@ if ~isnumeric(filenameall)
             accum = squeeze(double(h5read(file,'/Data/Camera/Device Settings/Readout Control/Accumulations')));
             nofwaveforms = accum(1);
             spectra_singlecycle = squeeze(rawdata_all);
-            [nofcycle, records, recordsize] = size(spectra_singlecycle);
+            if length(size(spectra_singlecycle)) == 2
+                nofcycle = 1;
+                [records, recordsize] = size(spectra_singlecycle);
+            else
+                [nofcycle, records, recordsize] = size(spectra_singlecycle);
+            end
             nofrecords = records*nofcycle;
             step = 1:records;
             for i = 1:nofcycle %length(filenameall)
