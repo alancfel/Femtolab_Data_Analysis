@@ -22,7 +22,7 @@ function varargout = cmidaq_iteration(varargin)
 
 % Edit the above text to modify the response to help multirecord
 
-% Last Modified by GUIDE v2.5 26-May-2023 13:42:42
+% Last Modified by GUIDE v2.5 26-May-2023 16:30:13
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -4178,3 +4178,125 @@ function savework_Callback(hObject, eventdata, handles)
 assignin('base',sprintf('SFG_YData'),handles.current_dataD);
 assignin('base',sprintf('SFG_XData'),handles.x);
 set(handles.textStatus, 'String', sprintf('ChannelD data was copied to the workspace'));
+
+
+% --------------------------------------------------------------------
+function menu_plot_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_plot (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menu_show_all_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_show_all (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global nofrecords;
+global nofrepes;
+global recordsize;
+global isChannelA;
+global isChannelB;
+global isChannelC;
+global isChannelD;
+global h;
+global xlabelmod;
+global ylabelmod;
+global delay_trigger;
+global mass_calibrate;
+global time_calibrate;
+global coincidence;
+global bandwith;
+t=0:1/(bandwith):(recordsize-1)/(bandwith);
+m = mass_calibrate*(t-delay_trigger).^2/(time_calibrate-delay_trigger)^2;
+n = 1:recordsize;
+switch xlabelmod
+    case 1
+        x = t;
+        xname = 'Time (\mus)';
+    case 2
+        x = n;
+        xname = 'Record Number';
+    case 3
+        x = m;
+        xname = 'm/q (Da)';
+    case 4
+        x = handles.x;
+        xname = 'SFG Wavelength (nm)';
+    case 5
+        x = 1240./handles.x;
+        xname = 'SFG Photon Energy (eV)';
+    case 6
+        x = 1240./(1240./handles.x-1240./mass_calibrate);
+        xname = 'IR Wavelength (nm)';
+    case 7
+        x = 1e7./(1240./(1240./handles.x-1240./mass_calibrate));
+        xname = 'Wavenumber (cm^{-1})';
+end
+switch ylabelmod
+    case 1
+        yname = 'Intensity (arb. units)';
+    case 2
+        yname = 'Voltage (mV)';
+end
+if isChannelA == 1;
+    legA = 'on';
+    if ylabelmod == 1;
+        plot(x,squeeze(handles.current_dataA),'r','DisplayName','ChannelA','visible',legA);
+    else
+        plot(x,squeeze(handles.current_dataA)/3.3659,'r','DisplayName','ChannelA','visible',legA);
+    end
+else
+    legA = 'off';
+end
+%    legend('-DynamicLegend');
+hold all;
+if isChannelB == 1;
+    legB = 'on';
+    if ylabelmod == 1
+        plot(x,squeeze(handles.current_dataB),'g','DisplayName','ChannelB','visible',legB);
+    else
+        plot(x,squeeze(handles.current_dataB)/3.3659,'g','DisplayName','ChannelB','visible',legB);
+    end
+else
+    legB = 'off';
+end
+if isChannelC == 1;
+    legC = 'on';
+    if ylabelmod == 1
+        plot(x,squeeze(handles.current_dataC),'b','DisplayName','ChannelC','visible',legC);
+    else
+        plot(x,squeeze(handles.current_dataC)/3.3659,'b','DisplayName','ChannelC','visible',legC);
+    end
+else
+    legC = 'off';
+end
+if isChannelD == 1;
+    legD = 'on';
+    if ylabelmod == 1
+        plot(x,squeeze(handles.current_dataD),'m','DisplayName','ChannelD','visible',legD);
+    else
+        plot(x,squeeze(handles.current_dataD)/3.3659,'m','DisplayName','ChannelD','visible',legD);
+    end
+else
+    legD = 'off';
+end
+%plot(x, handles.current_data1(record,:),'r', x, handles.current_data2(record,:),'b');
+%legend('channelB','channelD');
+%refresh_legend;
+hold off;
+if coincidence == 0
+    ymin = get(handles.ymin,'String');
+    ymax = get(handles.ymax,'String');
+    ylim([str2double(ymin), str2double(ymax)]);
+    xmin = get(handles.xmin,'String');
+    xmax = get(handles.xmax,'String');
+    xlim([str2double(xmin), str2double(xmax)]);
+else
+    axis tight;
+end
+xlabel(xname)%,'FontSize',20)
+ylabel(yname)%,'FontSize',20)
+grid on;
+refresh_legend;
+set(handles.textStatus, 'string', sprintf('Plot all of traces'))
