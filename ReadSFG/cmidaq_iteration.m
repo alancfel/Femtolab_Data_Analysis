@@ -22,7 +22,7 @@ function varargout = cmidaq_iteration(varargin)
 
 % Edit the above text to modify the response to help multirecord
 
-% Last Modified by GUIDE v2.5 26-May-2023 16:30:13
+% Last Modified by GUIDE v2.5 26-May-2023 17:16:22
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -2567,7 +2567,7 @@ else if strcmp(machename,'vertical')
             xlabel2 = 1:ceil(nofrecords/nofcycle) ;
             xname = 'Measurement series';
 %             xname2 = 'Ionisation laser power (mW)';
-            xname2 ='Lens stage position (mm)';
+            xname2 = 'Delay time (ps)';%Lens stage position (mm)';
         end
     end
 end
@@ -2734,7 +2734,7 @@ if dimension < 4
             csignalraw = mean(reshape(gatedataraw,(nofrepes*nofcycle),[]),1);%-(nofrepes*nofcycle)+1):(nofrepes*nofcycle*j)));
             stdcsignalraw = std(reshape(gatedataraw,(nofrepes*nofcycle),[]),1,1);%*j)-(nofrepes*nofcycle)+1):(nofrepes*nofcycle*j)));
         end
-        gatedata = gatedataraw(ind);
+        gatedata = gatedataraw;%gatedataraw(ind);
         fprintf('The size of ind is\n');
         size (ind)
         fprintf('The size of gatedata after sorting is\n');
@@ -2866,7 +2866,7 @@ if dimension < 4
                 export_fig(gcf,strcat(figurename,'_',sprintf('gate_%d',mgate),'_all','.pdf'),'-transparent');
 %                 saveas(gcf,strcat(figurename,'_',sprintf('gate_%d',mgate),'_all','.png'));
 %                 eval(sprintf('%s_gate%d_all = gatedataraw/61.04; ', figurename, mgate));
-                assignin('base',sprintf('%s_gate%d_all', figurename, mgate),gatedataraw/61.04);
+                assignin('base',sprintf('m%s_gate%d_all', figurename, mgate),gatedataraw/61.04);
             end
             h1 = figure('PaperSize',[8.267716 15.692913]);
             if xaxis == 1 && length(las) == length(xlabel2)
@@ -2904,9 +2904,9 @@ if dimension < 4
                 export_fig(gcf,strcat(figurename,'_',sprintf('gate_%d',mgate),'_scan','.pdf'),'-transparent');
 %                 saveas(gcf,strcat(figurename,'_',sprintf('gate_%d',mgate),'_scan','.png'));
 %                 eval(sprintf('%s_gate%d_ave = csignalraw/61.04; ', figurename, mgate));
-                assignin('base',sprintf('%s_gate%d_ave', figurename, mgate),csignalraw/61.04);
+                assignin('base',sprintf('m%s_gate%d_ave', figurename, mgate),csignalraw/61.04);
 %                 eval(sprintf('%s_gate%d_err = stdcsignalraw/61.04; ', figurename, mgate));
-                assignin('base',sprintf('%s_gate%d_err', figurename, mgate),stdcsignalraw/61.04);
+                assignin('base',sprintf('m%s_gate%d_err', figurename, mgate),stdcsignalraw/61.04);
             end
             h2 = figure('PaperSize',[8.267716 15.692913]);
             if xaxis == 1 && length(las) == length(xlabel2)
