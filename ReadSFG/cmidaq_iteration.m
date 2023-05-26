@@ -22,7 +22,7 @@ function varargout = cmidaq_iteration(varargin)
 
 % Edit the above text to modify the response to help multirecord
 
-% Last Modified by GUIDE v2.5 13-Dec-2022 11:43:25
+% Last Modified by GUIDE v2.5 26-May-2023 13:42:42
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -405,7 +405,7 @@ string_list{4} = 'Channel D';
 axes(handles.axes1);
 switch dimension
     case 1
-        [slider,recordsize] = size(handles.current_dataA);
+        [slider,recordsize] = size(handles.current_dataD);
         % slider = min([m, record]);
         if slider > 1;
             set(hObject,'Min',1,'Max',slider, 'SliderStep',[1/(slider-1) 10/(slider-1)]);
@@ -2774,10 +2774,10 @@ if dimension < 4
         gatemass = inputdlg(prompt,dlg_title,num_lines,defaultans);
         mgate = str2double(gatemass);
         %% assign the signal gate and background gate range to worksapce
-        assignin('base',sprintf('%s_gate%d_signalfrom', figurename, mgate),gatemin);
-        assignin('base',sprintf('%s_gate%d_signalto', figurename, mgate),gatemax);
-        assignin('base',sprintf('%s_gate%d_backgroundfrom', figurename, mgate),backgroundmin);
-        assignin('base',sprintf('%s_gate%d_backgroundto', figurename, mgate),backgroundmax);
+        assignin('base',sprintf('m%s_gate%d_signalfrom', figurename, mgate),gatemin);
+        assignin('base',sprintf('m%s_gate%d_signalto', figurename, mgate),gatemax);
+        assignin('base',sprintf('m%s_gate%d_backgroundfrom', figurename, mgate),backgroundmin);
+        assignin('base',sprintf('m%s_gate%d_backgroundto', figurename, mgate),backgroundmax);
         %%
         h0 = figure('PaperSize',[8.267716 15.692913]);
         plot(laser_shot, gatedata/61.04);%,'-o','linewidth',2,'markersize',8);
@@ -3919,8 +3919,70 @@ global ind;
 global figurename;
 global filenumber;
 global settings;
+answer = questdlg('Would you like to substract the background and normalize the spectrum?', ...
+    'Substraction Menu', ...
+    'Subtract and normalize','Subtract background only','No','No');
+% Handle response
+switch answer
+    case 'Subtract and normalize'
+        sub = 2;
+        uiwait(msgbox('Please select the data background file','Select'));
+        [filenameall, pathname] = uigetfile({'*.spe';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        filename = filenameall;
+        file = fullfile(pathname, filename);
+        dotall = regexp(filename,'\.');
+        dot = max(dotall);
+        if strcmp(filename(dot+1:end), 'spe')
+            datbkg = loadSPE(file);
+            handles.backg = (squeeze(datbkg.int));
+        else
+            uiwait(warndlg(sprintf('Error: Not the background spe file')));
+        end
+        uiwait(msgbox('Please select the normalize file','Select'));
+        [filenameall, pathname] = uigetfile({'*.spe';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        filename = filenameall;
+        file = fullfile(pathname, filename);
+        dotall = regexp(filename,'\.');
+        dot = max(dotall);
+        if strcmp(filename(dot+1:end), 'spe')
+            datnor = loadSPE(file);
+            handles.datnor = (squeeze(datnor.int));
+        else
+            uiwait(warndlg(sprintf('Error: Not the spe file')));
+        end
+        uiwait(msgbox('Please select the normalize file background','Select'));
+        [filenameall, pathname] = uigetfile({'*.spe';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        filename = filenameall;
+        file = fullfile(pathname, filename);
+        dotall = regexp(filename,'\.');
+        dot = max(dotall);
+        if strcmp(filename(dot+1:end), 'spe')
+            norbkg = loadSPE(file);
+            handles.nor = handles.datnor-(squeeze(norbkg.int));
+        else
+            uiwait(warndlg(sprintf('Error: Not the background spe file')));
+        end
+    case 'Subtract background only'
+        sub = 1;
+        uiwait(msgbox('Please select the background file','Select'));
+        [filenameall, pathname] = uigetfile({'*.spe';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        filename = filenameall;
+        file = fullfile(pathname, filename);
+        dotall = regexp(filename,'\.');
+        dot = max(dotall);
+        if strcmp(filename(dot+1:end), 'spe')
+            datbkg = loadSPE(file);
+            handles.backg = (squeeze(datbkg.int));
+        else
+            uiwait(warndlg(sprintf('Error: Not the background bin file')));
+        end
+    case 'No'
+        sub = 0;
+        disp('Donot substract the background.')
+end
+uiwait(msgbox('Please select the data file','Select'));
 [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on'); % When open more than one file, please be carful the order is right in file explorer
-if ischar(filenameall)
+if ~isnumeric(filenameall)
     clear handles.current_dataA handles.current_dataB handles.current_dataC handles.current_dataD
     if iscell(filenameall)
         fprintf('More than one file was selected\n')
@@ -3967,13 +4029,29 @@ if ischar(filenameall)
             handles.current_dataB = [handles.current_dataB',dataB']';
             handles.current_dataC = [handles.current_dataC',dataC']';
             handles.current_dataD = [handles.current_dataD',dataD']';
-            attA = [attA,attdata];
+            %             attA = [attA,attdata];
         end
+        handles.current_dataD = reshape(handles.current_dataD,[],recordsize);
+        %         handles.current_dataB = reshape(handles.current_dataB,[],recordsize);
+        %         handles.current_dataC = reshape(handles.current_dataC,[],recordsize);
+        %         handles.current_dataA = reshape(handles.current_dataA,[],recordsize);
         handles.x = dataA;
-        [~,ind] = sort(attA);
+        %         [~,ind] = sort(attA);
+        nofrepes = 1;
         nofcycle = length(filenameall);% iteration number
         nofrecords = nofrecords*nofcycle; %length(info.Groups); % measurement number = step number * cycle number
+        %         ind = 1:nofrecords;
+        step = 1:nofrecords;
         sliderVal = 1;
+        for i = 1:nofcycle %length(filenameall)
+            attdata = i:nofcycle:nofrecords*nofrepes*nofcycle;
+            attA = [attA,attdata];
+            %                     handles.current_dataD = [handles.current_dataD',(squeeze(spectra_singlecycle(i,:,:)))']';
+        end
+        [~,ind] = sort(attA);
+        handles.current_dataA = zeros(nofrecords*nofrepes,recordsize);
+        handles.current_dataC = zeros(nofrecords*nofrepes,recordsize);
+        handles.current_dataB = zeros(nofrecords*nofrepes,recordsize);
         set(handles.show, 'Value', sliderVal);
         show_Callback(handles.show, eventdata, handles);
     else
@@ -3984,7 +4062,7 @@ if ischar(filenameall)
         dot = max(dotall);
         filenumber = 1;
         %     set(handles.figure1, 'Name', filename);
-%         clear handles.current_dataA handles.current_dataB handles.current_dataC handles.current_dataD
+        %         clear handles.current_dataA handles.current_dataB handles.current_dataC handles.current_dataD
         if strcmp(filename(dot+1:end), 'mat')
             channeldata = load(file);
             names = fieldnames(channeldata);
@@ -4014,7 +4092,13 @@ if ischar(filenameall)
             [~, nofframe] = size((squeeze(dat.int))');
             if nofframe == 1
                 [nofrecords, recordsize] = size((squeeze(dat.int)));
-                handles.current_dataD = (squeeze(dat.int));
+                if sub == 2
+                    handles.current_dataD = ((squeeze(dat.int))-handles.backg)./handles.nor;
+                elseif sub == 1
+                    handles.current_dataD = (squeeze(dat.int))-handles.backg;
+                else
+                    handles.current_dataD = (squeeze(dat.int));
+                end
             else
                 [nofrecords, recordsize] = size((squeeze(dat.int))');
                 handles.current_dataD = (squeeze(dat.int))';
@@ -4037,51 +4121,60 @@ if ischar(filenameall)
             sliderVal = 1;
             set(handles.show, 'Value', sliderVal);
             show_Callback(handles.show, eventdata, handles)
-        else if strcmp(filename(dot+1:end), 'h5') || strcmp(filename(dot+1:end), 'hdf5') || strcmp(filename(dot+1:end), 'hdf')
-%                 info = h5info(file);
-                nofrepes = 1;                
-                selected_trigger = 2;
-                machename = 'None';
-                isChannelA = 0;
-                isChannelB = 0;
-                isChannelC = 0;
-                isChannelD = 1;
-                handles.current_dataA = [];
-                handles.current_dataB = [];
-                handles.current_dataC = [];
-                handles.current_dataD = [];
-                attA = [];
-                rawdata_all = double(h5read(filename,'/Data/Camera/Image ROI1'));
-                accum = squeeze(double(h5read(filename,'/Data/Camera/Device Settings/Readout Control/Accumulations')));
-                nofwaveforms = accum(1);
-                spectra_singlecycle = squeeze(rawdata_all);
-                [nofcycle, records, recordsize] = size(spectra_singlecycle);
-                nofrecords = records*nofcycle;
-                step = 1:records;
-                for i = 1:nofcycle %length(filenameall)
-                    attdata = i:nofcycle:records*nofrepes*nofcycle; 
-                    attA = [attA,attdata];
-%                     handles.current_dataD = [handles.current_dataD',(squeeze(spectra_singlecycle(i,:,:)))']';
-                end
-                [~,ind] = sort(attA);
-                handles.current_dataD = reshape(spectra_singlecycle,[],recordsize);
-                handles.current_dataA = zeros(nofrecords*nofrepes,recordsize);
-                handles.current_dataC = zeros(nofrecords*nofrepes,recordsize);
-                handles.current_dataB = zeros(nofrecords*nofrepes,recordsize);
-                WL_raw = h5read(filename,'/Data/Spectrograph/Module Data/ROIs Wavelengths');
-                WL_wavelength = WL_raw.Wavelengths;
-                WL_data = WL_wavelength(1,1,1,1);
-                handles.x = (WL_data{1,1})';
-                sliderVal = 1;
-                set(handles.show, 'Value', sliderVal);
-                show_Callback(handles.show, eventdata, handles)
-            else
-                uiwait(warndlg(sprintf('Error: Not the standard data')));
+        elseif strcmp(filename(dot+1:end), 'h5') || strcmp(filename(dot+1:end), 'hdf5') || strcmp(filename(dot+1:end), 'hdf')
+            %                 info = h5info(file);
+            nofrepes = 1;
+            selected_trigger = 2;
+            machename = 'None';
+            isChannelA = 0;
+            isChannelB = 0;
+            isChannelC = 0;
+            isChannelD = 1;
+            handles.current_dataA = [];
+            handles.current_dataB = [];
+            handles.current_dataC = [];
+            handles.current_dataD = [];
+            attA = [];
+            rawdata_all = double(h5read(filename,'/Data/Camera/Image ROI1'));
+            accum = squeeze(double(h5read(filename,'/Data/Camera/Device Settings/Readout Control/Accumulations')));
+            nofwaveforms = accum(1);
+            spectra_singlecycle = squeeze(rawdata_all);
+            [nofcycle, records, recordsize] = size(spectra_singlecycle);
+            nofrecords = records*nofcycle;
+            step = 1:records;
+            for i = 1:nofcycle %length(filenameall)
+                attdata = i:nofcycle:records*nofrepes*nofcycle;
+                attA = [attA,attdata];
+                %                     handles.current_dataD = [handles.current_dataD',(squeeze(spectra_singlecycle(i,:,:)))']';
             end
+            [~,ind] = sort(attA);
+            handles.current_dataD = reshape(spectra_singlecycle,[],recordsize);
+            handles.current_dataA = zeros(nofrecords*nofrepes,recordsize);
+            handles.current_dataC = zeros(nofrecords*nofrepes,recordsize);
+            handles.current_dataB = zeros(nofrecords*nofrepes,recordsize);
+            WL_raw = h5read(filename,'/Data/Spectrograph/Module Data/ROIs Wavelengths');
+            WL_wavelength = WL_raw.Wavelengths;
+            WL_data = WL_wavelength(1,1,1,1);
+            handles.x = (WL_data{1,1})';
+            sliderVal = 1;
+            set(handles.show, 'Value', sliderVal);
+            show_Callback(handles.show, eventdata, handles)
+        else
+            uiwait(warndlg(sprintf('Error: Not the standard data')));
         end
     end
     set(handles.figure1, 'Name', filename);
     figurename = filename(1:(dotall(1)-1));
-        else
-        uiwait(warndlg(sprintf('Error: No file selected')));
+else
+    uiwait(warndlg(sprintf('Error: No file selected')));
 end
+
+
+% --------------------------------------------------------------------
+function savework_Callback(hObject, eventdata, handles)
+% hObject    handle to savework (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+assignin('base',sprintf('SFG_YData'),handles.current_dataD);
+assignin('base',sprintf('SFG_XData'),handles.x);
+set(handles.textStatus, 'String', sprintf('ChannelD data was copied to the workspace'));

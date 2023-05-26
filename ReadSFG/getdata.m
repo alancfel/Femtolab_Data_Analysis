@@ -39,7 +39,14 @@ if strcmp(filename(dot+1:end), 'mat')
     %     show_Callback(handles.show, eventdata, handles)
 elseif strcmp(filename(dot+1:end), 'spe')
     dat = loadSPE(file);
-    [nofrecords, recordsize] = size((squeeze(dat.int))');
+    [~, nofframe] = size((squeeze(dat.int))');
+    if nofframe == 1
+        [nofrecords, recordsize] = size((squeeze(dat.int)));
+        current_dataD = (squeeze(dat.int));
+    else
+        [nofrecords, recordsize] = size((squeeze(dat.int))');
+        current_dataD = (squeeze(dat.int))';
+    end
     nofrepes = 1;
     nofwaveforms = 1;
     nofcycle = 1;
@@ -52,8 +59,9 @@ elseif strcmp(filename(dot+1:end), 'spe')
     current_dataA = dat.wavelength(dat.roix+1:dat.xdim+dat.roix);
     current_dataC = zeros(nofrecords*nofrepes,recordsize);
     current_dataB = zeros(nofrecords*nofrepes,recordsize);
-    current_dataD = (squeeze(dat.int))';
     sliderVal = 1;
+%     attdata = i:nofcycle:records*nofrepes*nofcycle;
+    attA = zeros(1,nofrecords*nofrepes);
 elseif strcmp(filename(dot+1:end), 'hdf5') || strcmp(filename(dot+1:end), 'h5') || strcmp(filename(dot+1:end), 'hdf')
     info = h5info(file);
     if isempty(info.Datasets) %ismember ('Name',fieldnames(info.Datasets))
