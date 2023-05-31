@@ -2627,8 +2627,8 @@ if dimension < 4
                         case 4
                             current_data = mean(handles.current_dataD);
                     end
-                    gatemin = find(current_data(gate(3):gate(4)) == min(current_data(gate(3):gate(4))))+gate(3)-1-floor(gateran/2);
-                    gatemax = find(current_data(gate(3):gate(4)) == min(current_data(gate(3):gate(4))))+gate(3)-1+floor(gateran/2);
+                    gatemin = find(current_data(gate(3):gate(4)) == min(current_data(gate(3):gate(4))))+gate(3)-1-floor(gateran/2);% find the minium data point of the gate and set range with external length
+                    gatemax = find(current_data(gate(3):gate(4)) == min(current_data(gate(3):gate(4))))+gate(3)-1+floor(gateran/2);% find the minium data point of the gate and set range with external length
                 else
                     gatemin = gate(3);
                     gatemax = gate(4);
@@ -3927,7 +3927,7 @@ switch answer
     case 'Subtract and normalize'
         sub = 2;
         uiwait(msgbox('Please select the data background file','Select'));
-        [filenameall, pathname] = uigetfile({'*.spe';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
         filename = filenameall;
         file = fullfile(pathname, filename);
         dotall = regexp(filename,'\.');
@@ -3935,11 +3935,19 @@ switch answer
         if strcmp(filename(dot+1:end), 'spe')
             datbkg = loadSPE(file);
             handles.backg = (squeeze(datbkg.int));
+        elseif strcmp(filename(dot+1:end), 'h5')
+            bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
+            if length(size(squeeze(bkgdata_all))) == 2
+                handles.backg = mean(squeeze(bkgdata_all));
+            else
+                [~, ~, bkgsize] = size(squeeze(bkgdata_all));
+                handles.backg = mean(reshape(squeeze(bkgdata_all),[],bkgsize));
+            end            
         else
             uiwait(warndlg(sprintf('Error: Not the background spe file')));
         end
         uiwait(msgbox('Please select the normalize file','Select'));
-        [filenameall, pathname] = uigetfile({'*.spe';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
         filename = filenameall;
         file = fullfile(pathname, filename);
         dotall = regexp(filename,'\.');
@@ -3947,11 +3955,19 @@ switch answer
         if strcmp(filename(dot+1:end), 'spe')
             datnor = loadSPE(file);
             handles.datnor = (squeeze(datnor.int));
+        elseif strcmp(filename(dot+1:end), 'h5')
+            bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
+            if length(size(squeeze(bkgdata_all))) == 2
+                handles.datnor = mean(squeeze(bkgdata_all));
+            else
+                [~, ~, bkgsize] = size(squeeze(bkgdata_all));
+                handles.datnor = mean(reshape(squeeze(bkgdata_all),[],bkgsize));
+            end                
         else
             uiwait(warndlg(sprintf('Error: Not the spe file')));
         end
         uiwait(msgbox('Please select the normalize file background','Select'));
-        [filenameall, pathname] = uigetfile({'*.spe';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
         filename = filenameall;
         file = fullfile(pathname, filename);
         dotall = regexp(filename,'\.');
@@ -3959,13 +3975,23 @@ switch answer
         if strcmp(filename(dot+1:end), 'spe')
             norbkg = loadSPE(file);
             handles.nor = handles.datnor-(squeeze(norbkg.int));
+        elseif strcmp(filename(dot+1:end), 'h5')
+            bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
+            if length(size(squeeze(bkgdata_all))) == 2
+                backg = mean(squeeze(bkgdata_all));
+                handles.nor = handles.datnor-backg;
+            else
+                [~, ~, bkgsize] = size(squeeze(bkgdata_all));
+                backg = mean(reshape(squeeze(bkgdata_all),[],bkgsize));
+                handles.nor = handles.datnor-backg;
+            end                
         else
             uiwait(warndlg(sprintf('Error: Not the background spe file')));
         end
     case 'Subtract background only'
         sub = 1;
         uiwait(msgbox('Please select the background file','Select'));
-        [filenameall, pathname] = uigetfile({'*.spe';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
         filename = filenameall;
         file = fullfile(pathname, filename);
         dotall = regexp(filename,'\.');
@@ -3973,6 +3999,14 @@ switch answer
         if strcmp(filename(dot+1:end), 'spe')
             datbkg = loadSPE(file);
             handles.backg = (squeeze(datbkg.int));
+        elseif strcmp(filename(dot+1:end), 'h5')
+            bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
+            if length(size(squeeze(bkgdata_all))) == 2
+                handles.backg = mean(squeeze(bkgdata_all));
+            else
+                [~, ~, bkgsize] = size(squeeze(bkgdata_all));
+                handles.backg = mean(reshape(squeeze(bkgdata_all),[],bkgsize));
+            end                
         else
             uiwait(warndlg(sprintf('Error: Not the background bin file')));
         end
@@ -4030,11 +4064,7 @@ if ~isnumeric(filenameall)
             handles.current_dataC = [handles.current_dataC',dataC']';
             handles.current_dataD = [handles.current_dataD',dataD']';
             %             attA = [attA,attdata];
-        end
-        handles.current_dataD = reshape(handles.current_dataD,[],recordsize);
-        %         handles.current_dataB = reshape(handles.current_dataB,[],recordsize);
-        %         handles.current_dataC = reshape(handles.current_dataC,[],recordsize);
-        %         handles.current_dataA = reshape(handles.current_dataA,[],recordsize);
+        end        
         handles.x = dataA;
         %         [~,ind] = sort(attA);
         nofrepes = 1;
@@ -4052,6 +4082,13 @@ if ~isnumeric(filenameall)
         handles.current_dataA = zeros(nofrecords*nofrepes,recordsize);
         handles.current_dataC = zeros(nofrecords*nofrepes,recordsize);
         handles.current_dataB = zeros(nofrecords*nofrepes,recordsize);
+        if sub == 2
+            handles.current_dataD = (reshape(handles.current_dataD,[],recordsize)-repmat(handles.backg,nofrecords,1))./repmat(handles.nor,nofrecords,1);
+        elseif sub == 1
+            handles.current_dataD = reshape(handles.current_dataD,[],recordsize)-repmat((handles.backg),nofrecords,1);
+        else
+            handles.current_dataD = reshape(handles.current_dataD,[],recordsize);
+        end          
         set(handles.show, 'Value', sliderVal);
         show_Callback(handles.show, eventdata, handles);
     else
@@ -4101,7 +4138,13 @@ if ~isnumeric(filenameall)
                 end
             else
                 [nofrecords, recordsize] = size((squeeze(dat.int))');
-                handles.current_dataD = (squeeze(dat.int))';
+                if sub == 2
+                    handles.current_dataD = ((squeeze(dat.int))'-repmat(handles.backg,nofrecords,1))./repmat(handles.nor,nofrecords,1);
+                elseif sub == 1
+                    handles.current_dataD = (squeeze(dat.int))'-repmat((handles.backg),nofrecords,1);
+                else
+                    handles.current_dataD = (squeeze(dat.int))';
+                end               
             end
             nofrepes = 1;
             nofwaveforms = dat.accumulations;
@@ -4153,10 +4196,17 @@ if ~isnumeric(filenameall)
                 %                     handles.current_dataD = [handles.current_dataD',(squeeze(spectra_singlecycle(i,:,:)))']';
             end
             [~,ind] = sort(attA);
-            handles.current_dataD = reshape(spectra_singlecycle,[],recordsize);
+%             handles.current_dataD = reshape(spectra_singlecycle,[],recordsize);
             handles.current_dataA = zeros(nofrecords*nofrepes,recordsize);
             handles.current_dataC = zeros(nofrecords*nofrepes,recordsize);
             handles.current_dataB = zeros(nofrecords*nofrepes,recordsize);
+            if sub == 2
+                handles.current_dataD = (reshape(spectra_singlecycle,[],recordsize)-repmat(handles.backg,nofrecords,1))./repmat(handles.nor,nofrecords,1);
+            elseif sub == 1
+                handles.current_dataD = reshape(spectra_singlecycle,[],recordsize)-repmat((handles.backg),nofrecords,1);
+            else
+                handles.current_dataD = reshape(spectra_singlecycle,[],recordsize);
+            end              
             WL_raw = h5read(file,'/Data/Spectrograph/Module Data/ROIs Wavelengths');
             WL_wavelength = WL_raw.Wavelengths;
             WL_data = WL_wavelength(1,1,1,1);
