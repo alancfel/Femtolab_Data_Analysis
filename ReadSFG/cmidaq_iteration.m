@@ -4082,8 +4082,10 @@ if ~isnumeric(filenameall)
         handles.current_dataA = zeros(nofrecords*nofrepes,recordsize);
         handles.current_dataC = zeros(nofrecords*nofrepes,recordsize);
         handles.current_dataB = zeros(nofrecords*nofrepes,recordsize);
-        if sub == 2
-            handles.current_dataD = (reshape(handles.current_dataD,[],recordsize)-repmat(handles.backg,nofrecords,1))./repmat(handles.nor,nofrecords,1);
+        if sub == 2            
+            [fitresult, ~] = splinesmooth(handles.x, handles.nor);
+            handles.snor = (fitresult(handles.x))';
+            handles.current_dataD = (reshape(handles.current_dataD,[],recordsize)-repmat(handles.backg,nofrecords,1))./repmat(handles.snor,nofrecords,1);
         elseif sub == 1
             handles.current_dataD = reshape(handles.current_dataD,[],recordsize)-repmat((handles.backg),nofrecords,1);
         else
@@ -4130,7 +4132,9 @@ if ~isnumeric(filenameall)
             if nofframe == 1
                 [nofrecords, recordsize] = size((squeeze(dat.int)));
                 if sub == 2
-                    handles.current_dataD = ((squeeze(dat.int))-handles.backg)./handles.nor;
+                    [fitresult, ~] = splinesmooth(handles.x, handles.nor);
+                    handles.snor = (fitresult(handles.x))';
+                    handles.current_dataD = ((squeeze(dat.int))-handles.backg)./handles.snor;
                 elseif sub == 1
                     handles.current_dataD = (squeeze(dat.int))-handles.backg;
                 else
@@ -4139,7 +4143,9 @@ if ~isnumeric(filenameall)
             else
                 [nofrecords, recordsize] = size((squeeze(dat.int))');
                 if sub == 2
-                    handles.current_dataD = ((squeeze(dat.int))'-repmat(handles.backg,nofrecords,1))./repmat(handles.nor,nofrecords,1);
+                    [fitresult, ~] = splinesmooth(handles.x, handles.nor);
+                    handles.snor = (fitresult(handles.x))';
+                    handles.current_dataD = ((squeeze(dat.int))'-repmat(handles.backg,nofrecords,1))./repmat(handles.snor,nofrecords,1);
                 elseif sub == 1
                     handles.current_dataD = (squeeze(dat.int))'-repmat((handles.backg),nofrecords,1);
                 else
@@ -4201,7 +4207,9 @@ if ~isnumeric(filenameall)
             handles.current_dataC = zeros(nofrecords*nofrepes,recordsize);
             handles.current_dataB = zeros(nofrecords*nofrepes,recordsize);
             if sub == 2
-                handles.current_dataD = (reshape(spectra_singlecycle,[],recordsize)-repmat(handles.backg,nofrecords,1))./repmat(handles.nor,nofrecords,1);
+                [fitresult, ~] = splinesmooth(handles.x, handles.nor);
+                handles.snor = (fitresult(handles.x))';
+                handles.current_dataD = (reshape(spectra_singlecycle,[],recordsize)-repmat(handles.backg,nofrecords,1))./repmat(handles.snor,nofrecords,1);
             elseif sub == 1
                 handles.current_dataD = reshape(spectra_singlecycle,[],recordsize)-repmat((handles.backg),nofrecords,1);
             else
