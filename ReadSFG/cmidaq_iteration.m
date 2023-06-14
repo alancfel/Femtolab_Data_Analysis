@@ -2774,10 +2774,11 @@ if dimension < 4
         gatemass = inputdlg(prompt,dlg_title,num_lines,defaultans);
         mgate = str2double(gatemass);
         %% assign the signal gate and background gate range to worksapce
-        assignin('base',sprintf('m%s_gate%d_signalfrom', figurename, mgate),gatemin);
-        assignin('base',sprintf('m%s_gate%d_signalto', figurename, mgate),gatemax);
-        assignin('base',sprintf('m%s_gate%d_backgroundfrom', figurename, mgate),backgroundmin);
-        assignin('base',sprintf('m%s_gate%d_backgroundto', figurename, mgate),backgroundmax);
+        assignin('base',sprintf('m_gate%d_signalfrom', mgate),gatemin);
+        assignin('base',sprintf('m_gate%d_signalto', mgate),gatemax);
+        assignin('base',sprintf('m_gate%d_backgroundfrom', mgate),backgroundmin);
+        assignin('base',sprintf('m_gate%d_backgroundto', mgate),backgroundmax);
+        assignin('base',sprintf('m_gate%d_msignal', mgate),msignal);
         %%
         h0 = figure('PaperSize',[8.267716 15.692913]);
         plot(laser_shot, gatedata/61.04);%,'-o','linewidth',2,'markersize',8);
@@ -2823,7 +2824,7 @@ if dimension < 4
         if nofwaveforms == 1
             h6 = figure('PaperSize',[8.267716 15.692913]);
             plot(gatedataraw/61.04);%,'-o','linewidth',2,'markersize',8);
-            assignin('base',sprintf('%s_gate%d_all', figurename, mgate),gatedataraw);
+            assignin('base',sprintf('gate%d_all', mgate),gatedataraw);
             ylabel(sprintf('Ion yields at %d Da (arb.units)',mgate),'FontSize',14);%Intensiy (a.u.)','FontSize',14)
             xlabel('Desorption laser shots','FontSize',14)%Measurement series','FontSize',14)
             set(gca,'fontsize',20);
