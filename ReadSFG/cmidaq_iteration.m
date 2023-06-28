@@ -3947,7 +3947,7 @@ switch answer
         else
             uiwait(warndlg(sprintf('Error: Not the background spe file')));
         end
-        uiwait(msgbox('Please select the normalize file','Select'));
+        uiwait(msgbox('Please select the reference file','Select'));
         [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
         filename = filenameall;
         file = fullfile(pathname, filename);
@@ -3967,7 +3967,7 @@ switch answer
         else
             uiwait(warndlg(sprintf('Error: Not the spe file')));
         end
-        uiwait(msgbox('Please select the normalize file background','Select'));
+        uiwait(msgbox('Please select the reference file background','Select'));
         [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
         filename = filenameall;
         file = fullfile(pathname, filename);
