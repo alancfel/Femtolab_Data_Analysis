@@ -3928,7 +3928,7 @@ switch answer
     case 'Subtract and normalize'
         sub = 2;
         uiwait(msgbox('Please select the data background file','Select'));
-        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
         filename = filenameall;
         file = fullfile(pathname, filename);
         dotall = regexp(filename,'\.');
@@ -3948,7 +3948,7 @@ switch answer
             uiwait(warndlg(sprintf('Error: Not the background spe file')));
         end
         uiwait(msgbox('Please select the reference file','Select'));
-        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
         filename = filenameall;
         file = fullfile(pathname, filename);
         dotall = regexp(filename,'\.');
@@ -3968,7 +3968,7 @@ switch answer
             uiwait(warndlg(sprintf('Error: Not the spe file')));
         end
         uiwait(msgbox('Please select the reference file background','Select'));
-        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
         filename = filenameall;
         file = fullfile(pathname, filename);
         dotall = regexp(filename,'\.');
@@ -3992,7 +3992,7 @@ switch answer
     case 'Subtract background only'
         sub = 1;
         uiwait(msgbox('Please select the background file','Select'));
-        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
         filename = filenameall;
         file = fullfile(pathname, filename);
         dotall = regexp(filename,'\.');
@@ -4016,7 +4016,7 @@ switch answer
         disp('Donot substract the background.')
 end
 uiwait(msgbox('Please select the data file','Select'));
-[filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on'); % When open more than one file, please be carful the order is right in file explorer
+[filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on'); % When open more than one file, please be carful the order is right in file explorer
 if ~isnumeric(filenameall)
     clear handles.current_dataA handles.current_dataB handles.current_dataC handles.current_dataD
     if iscell(filenameall)
@@ -4084,7 +4084,7 @@ if ~isnumeric(filenameall)
         handles.current_dataC = zeros(nofrecords*nofrepes,recordsize);
         handles.current_dataB = zeros(nofrecords*nofrepes,recordsize);
         if sub == 2            
-            [fitresult, ~] = splinesmooth(handles.x, handles.nor);
+            [fitresult, ~] = splinesmooth((handles.x)', handles.nor);
             handles.snor = (fitresult(handles.x))';
             handles.current_dataD = (reshape(handles.current_dataD,[],recordsize)-repmat(handles.backg,nofrecords,1))./repmat(handles.snor,nofrecords,1);
         elseif sub == 1
@@ -4133,7 +4133,7 @@ if ~isnumeric(filenameall)
             if nofframe == 1
                 [nofrecords, recordsize] = size((squeeze(dat.int)));
                 if sub == 2
-                    [fitresult, ~] = splinesmooth(handles.x, handles.nor);
+                    [fitresult, ~] = splinesmooth((handles.x)', handles.nor);
                     handles.snor = (fitresult(handles.x))';
                     handles.current_dataD = ((squeeze(dat.int))-handles.backg)./handles.snor;
                 elseif sub == 1
@@ -4144,7 +4144,7 @@ if ~isnumeric(filenameall)
             else
                 [nofrecords, recordsize] = size((squeeze(dat.int))');
                 if sub == 2
-                    [fitresult, ~] = splinesmooth(handles.x, handles.nor);
+                    [fitresult, ~] = splinesmooth((handles.x)', handles.nor);
                     handles.snor = (fitresult(handles.x))';
                     handles.current_dataD = ((squeeze(dat.int))'-repmat(handles.backg,nofrecords,1))./repmat(handles.snor,nofrecords,1);
                 elseif sub == 1
@@ -4171,6 +4171,49 @@ if ~isnumeric(filenameall)
             sliderVal = 1;
             set(handles.show, 'Value', sliderVal);
             show_Callback(handles.show, eventdata, handles)
+        elseif strcmp(filename(dot+1:end), 'jdx')
+            fields = {'current_dataA','current_dataB','current_dataC','current_dataD'};
+            handles = rmfield(handles,fields);
+            Jcampstruct = jcampread(file);
+            dat = Jcampstruct.Blocks(1); 
+            [~, nofframe] = size((squeeze(dat.YData))');
+            if nofframe == 1
+                [nofrecords, recordsize] = size((squeeze(dat.YData)));
+                if sub == 2
+                    uiwait(warndlg(sprintf('Error: .jdx does not need to normalize')));
+                elseif sub == 1
+                    uiwait(warndlg(sprintf('Error: .jdx does not need to subtract background')));
+                else
+                    handles.current_dataD = (squeeze(dat.YData));
+                end
+            else
+                [nofrecords, recordsize] = size((squeeze(dat.YData))');
+                if sub == 2
+                    uiwait(warndlg(sprintf('Error: .jdx does not need to normalize')));
+                elseif sub == 1
+                    uiwait(warndlg(sprintf('Error: .jdx does not need to subtract background')));
+                else
+                    handles.current_dataD = (squeeze(dat.YData))';
+                end               
+            end
+            nofrepes = 1;
+            nofwaveforms = 1;
+            nofcycle = 1;
+            step = 1:nofrecords;
+            selected_trigger = 2;
+            machename = 'None';
+            isChannelA = 0;
+            isChannelB = 0;
+            isChannelC = 0;
+            isChannelD = 1;
+            handles.current_dataA = zeros(nofrecords*nofrepes,recordsize);
+            handles.current_dataC = zeros(nofrecords*nofrepes,recordsize);
+            handles.current_dataB = zeros(nofrecords*nofrepes,recordsize);
+            handles.x = 1024./(1024./800+1024./(1e7./dat.XData));
+            ind = 1:nofrecords;
+            sliderVal = 1;
+            set(handles.show, 'Value', sliderVal);
+            show_Callback(handles.show, eventdata, handles)            
         elseif strcmp(filename(dot+1:end), 'h5') || strcmp(filename(dot+1:end), 'hdf5') || strcmp(filename(dot+1:end), 'hdf')
             %                 info = h5info(file);
             nofrepes = 1;
@@ -4208,7 +4251,7 @@ if ~isnumeric(filenameall)
             handles.current_dataC = zeros(nofrecords*nofrepes,recordsize);
             handles.current_dataB = zeros(nofrecords*nofrepes,recordsize);
             if sub == 2
-                [fitresult, ~] = splinesmooth(handles.x, handles.nor);
+                [fitresult, ~] = splinesmooth((handles.x)', handles.nor);
                 handles.snor = (fitresult(handles.x))';
                 handles.current_dataD = (reshape(spectra_singlecycle,[],recordsize)-repmat(handles.backg,nofrecords,1))./repmat(handles.snor,nofrecords,1);
             elseif sub == 1
