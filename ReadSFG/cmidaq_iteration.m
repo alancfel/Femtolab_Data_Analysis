@@ -3935,7 +3935,7 @@ switch answer
         dot = max(dotall);
         if strcmp(filename(dot+1:end), 'spe')
             datbkg = loadSPE(file);
-            handles.backg = (squeeze(datbkg.int));
+            handles.backg = mean(squeeze(datbkg.int),2)';
         elseif strcmp(filename(dot+1:end), 'h5')
             bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
             if length(size(squeeze(bkgdata_all))) == 2
@@ -3975,7 +3975,7 @@ switch answer
         dot = max(dotall);
         if strcmp(filename(dot+1:end), 'spe')
             norbkg = loadSPE(file);
-            handles.nor = handles.datnor-(mean(squeeze(norbkg.int),2))';
+            handles.nor = (mean(squeeze(handles.datnor),2))'-(mean(squeeze(norbkg.int),2))';
         elseif strcmp(filename(dot+1:end), 'h5')
             bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
             if length(size(squeeze(bkgdata_all))) == 2
