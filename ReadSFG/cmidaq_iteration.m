@@ -22,7 +22,7 @@ function varargout = cmidaq_iteration(varargin)
 
 % Edit the above text to modify the response to help multirecord
 
-% Last Modified by GUIDE v2.5 26-May-2023 17:16:22
+% Last Modified by GUIDE v2.5 13-Jul-2023 10:24:59
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -4407,3 +4407,14 @@ ylabel(yname)%,'FontSize',20)
 grid on;
 % refresh_legend;
 set(handles.textStatus, 'string', sprintf('Plot all of traces'))
+
+
+% --------------------------------------------------------------------
+function menu_filtero_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_filtero (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+handles.current_dataD = (filloutliers(handles.current_dataD',"center","mean","ThresholdFactor",8))';%(filloutliers(handles.current_dataD',"nearest","mean"))';%filloutliers(handles.current_dataD,"linear");%
+show_Callback(handles.show, eventdata, handles);
+set(handles.textStatus, 'string', sprintf('Outliers are removed'));
