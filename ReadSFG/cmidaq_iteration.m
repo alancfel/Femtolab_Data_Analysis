@@ -22,7 +22,7 @@ function varargout = cmidaq_iteration(varargin)
 
 % Edit the above text to modify the response to help multirecord
 
-% Last Modified by GUIDE v2.5 13-Jul-2023 10:24:59
+% Last Modified by GUIDE v2.5 14-Jul-2023 18:27:54
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -2250,6 +2250,7 @@ if ~isempty(filenameall)
     end
     % else
     %     uiwait(warndlg(sprintf('Error: No file selected')));
+    % handles.current_dataB = handles.current_dataD;
     set(handles.figure1, 'Name', filename);
     figurename = filename(1:(dotall(1)-1));
 end
@@ -4094,6 +4095,7 @@ if ~isnumeric(filenameall)
         end          
         set(handles.show, 'Value', sliderVal);
         show_Callback(handles.show, eventdata, handles);
+        handles.current_dataA = handles.current_dataD;
     else
         fprintf('One file was selected\n')
         filename = filenameall;
@@ -4124,7 +4126,8 @@ if ~isnumeric(filenameall)
             handles.current_dataD = channeldata.(char(names(1,:)));
             sliderVal = 1;
             set(handles.show, 'Value', sliderVal);
-            show_Callback(handles.show, eventdata, handles)
+            show_Callback(handles.show, eventdata, handles);
+            handles.current_dataA = handles.current_dataD;
         elseif strcmp(filename(dot+1:end), 'spe')
             fields = {'current_dataA','current_dataB','current_dataC','current_dataD'};
             handles = rmfield(handles,fields);
@@ -4163,14 +4166,14 @@ if ~isnumeric(filenameall)
             isChannelB = 0;
             isChannelC = 0;
             isChannelD = 1;
-            handles.current_dataA = zeros(nofrecords*nofrepes,recordsize);
+            handles.current_dataA = handles.current_dataD;
             handles.current_dataC = zeros(nofrecords*nofrepes,recordsize);
             handles.current_dataB = zeros(nofrecords*nofrepes,recordsize);
             handles.x = dat.wavelength(dat.roix+1:dat.xdim+dat.roix);
             ind = 1:nofrecords;
             sliderVal = 1;
             set(handles.show, 'Value', sliderVal);
-            show_Callback(handles.show, eventdata, handles)
+            show_Callback(handles.show, eventdata, handles);
         elseif strcmp(filename(dot+1:end), 'jdx')
             fields = {'current_dataA','current_dataB','current_dataC','current_dataD'};
             handles = rmfield(handles,fields);
@@ -4206,14 +4209,14 @@ if ~isnumeric(filenameall)
             isChannelB = 0;
             isChannelC = 0;
             isChannelD = 1;
-            handles.current_dataA = zeros(nofrecords*nofrepes,recordsize);
+            handles.current_dataA = handles.current_dataD;
             handles.current_dataC = zeros(nofrecords*nofrepes,recordsize);
             handles.current_dataB = zeros(nofrecords*nofrepes,recordsize);
             handles.x = 1024./(1024./800+1024./(1e7./dat.XData));
             ind = 1:nofrecords;
             sliderVal = 1;
             set(handles.show, 'Value', sliderVal);
-            show_Callback(handles.show, eventdata, handles)            
+            show_Callback(handles.show, eventdata, handles);            
         elseif strcmp(filename(dot+1:end), 'h5') || strcmp(filename(dot+1:end), 'hdf5') || strcmp(filename(dot+1:end), 'hdf')
             %                 info = h5info(file);
             nofrepes = 1;
@@ -4265,7 +4268,8 @@ if ~isnumeric(filenameall)
             handles.x = (WL_data{1,1})';
             sliderVal = 1;
             set(handles.show, 'Value', sliderVal);
-            show_Callback(handles.show, eventdata, handles)
+            show_Callback(handles.show, eventdata, handles);
+            handles.current_dataA = handles.current_dataD;
         else
             uiwait(warndlg(sprintf('Error: Not the standard data')));
         end
@@ -4275,7 +4279,6 @@ if ~isnumeric(filenameall)
 else
     uiwait(warndlg(sprintf('Error: No file selected')));
 end
-
 
 % --------------------------------------------------------------------
 function savework_Callback(hObject, eventdata, handles)
@@ -4414,7 +4417,22 @@ function menu_filtero_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_filtero (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+promptrange = {'Enter the filter thresholdfactor:'};
+dlg_title_gate = 'Filter';
+num_range = 1;
+defaultansrange = {'8'};
+gaterange = inputdlg(promptrange,dlg_title_gate,num_range,defaultansrange);
+tfilter = str2double(gaterange);
+handles.current_dataD = (filloutliers(handles.current_dataD',"center","mean","ThresholdFactor",tfilter))';%(filloutliers(handles.current_dataD',"nearest","mean"))';%filloutliers(handles.current_dataD,"linear");%
+show_Callback(handles.show, eventdata, handles);
+set(handles.textStatus, 'string', sprintf('Outliers are removed'));
 
-handles.current_dataD = (filloutliers(handles.current_dataD',"center","mean","ThresholdFactor",8))';%(filloutliers(handles.current_dataD',"nearest","mean"))';%filloutliers(handles.current_dataD,"linear");%
+
+% --------------------------------------------------------------------
+function Undofilter_Callback(hObject, eventdata, handles)
+% hObject    handle to Undofilter (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.current_dataD = handles.current_dataA;
 show_Callback(handles.show, eventdata, handles);
 set(handles.textStatus, 'string', sprintf('Outliers are removed'));
