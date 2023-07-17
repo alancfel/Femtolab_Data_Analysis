@@ -3554,7 +3554,7 @@ if dimension == 3 && saveps == 1
         set(handles.previous,'string',sprintf('%d',n));
         previous_Callback(handles.previous, eventdata, handles)
         new_axes = copyobj(handles.axes1, Fig2);
-        set(new_axes, 'Units', 'Normalized', 'Position', 'default');
+        set(new_axes, 'Units', 'Normalized', 'Position', [0.15, 0.15, 0.75, 0.75]);
         grid(new_axes, 'off')
         set(new_axes,'fontsize',20);
         hay = get(new_axes,'Ylabel');
@@ -3587,7 +3587,7 @@ else
     new_axes = copyobj(handles.axes1, Fig2);
     % set(new_axes,'Parent',Fig2);
     % set(new_axes,'Position',[0 0 1 1]);
-    set(new_axes, 'Units', 'Normalized', 'Position', 'default');
+    set(new_axes, 'Units', 'Normalized', 'Position', [0.15, 0.15, 0.75, 0.75]);
     set(Fig2, 'Position', [80,100,1000,620]);
     grid(new_axes, 'off')
     set(new_axes,'fontsize',20);
@@ -3956,7 +3956,11 @@ switch answer
         dot = max(dotall);
         if strcmp(filename(dot+1:end), 'spe')
             datnor = loadSPE(file);
-            handles.datnor = (squeeze(datnor.int));
+            if length(size(datnor.int)) == 2
+                handles.datnor = datnor.int;
+            else
+                handles.datnor = (mean(squeeze(datnor.int),2))';
+            end               
         elseif strcmp(filename(dot+1:end), 'h5')
             bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
             if length(size(squeeze(bkgdata_all))) == 2
@@ -3976,7 +3980,11 @@ switch answer
         dot = max(dotall);
         if strcmp(filename(dot+1:end), 'spe')
             norbkg = loadSPE(file);
-            handles.nor = (mean(squeeze(handles.datnor),2))'-(mean(squeeze(norbkg.int),2))';
+            if length(size(norbkg.int)) == 2
+                handles.nor = handles.datnor - norbkg.int;
+            else
+                handles.nor = handles.datnor - (mean(squeeze(norbkg.int),2))';
+            end   
         elseif strcmp(filename(dot+1:end), 'h5')
             bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
             if length(size(squeeze(bkgdata_all))) == 2
@@ -4423,7 +4431,7 @@ num_range = 1;
 defaultansrange = {'8'};
 gaterange = inputdlg(promptrange,dlg_title_gate,num_range,defaultansrange);
 tfilter = str2double(gaterange);
-handles.current_dataD = (filloutliers(handles.current_dataD',"center","mean","ThresholdFactor",tfilter))';%(filloutliers(handles.current_dataD',"nearest","mean"))';%filloutliers(handles.current_dataD,"linear");%
+handles.current_dataD = (filloutliers(handles.current_dataD',"nearest","mean","ThresholdFactor",tfilter))';%(filloutliers(handles.current_dataD',"nearest","mean"))';%filloutliers(handles.current_dataD,"linear");%
 show_Callback(handles.show, eventdata, handles);
 set(handles.textStatus, 'string', sprintf('Outliers are removed'));
 
