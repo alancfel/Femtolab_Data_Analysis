@@ -4140,6 +4140,7 @@ if ~isnumeric(filenameall)
             fields = {'current_dataA','current_dataB','current_dataC','current_dataD'};
             handles = rmfield(handles,fields);
             dat = loadSPE(file);
+            handles.x = dat.wavelength(dat.roix+1:dat.xdim+dat.roix);
             [~, nofframe] = size((squeeze(dat.int))');
             if nofframe == 1
                 [nofrecords, recordsize] = size((squeeze(dat.int)));
@@ -4177,7 +4178,6 @@ if ~isnumeric(filenameall)
             handles.current_dataA = handles.current_dataD;
             handles.current_dataC = zeros(nofrecords*nofrepes,recordsize);
             handles.current_dataB = zeros(nofrecords*nofrepes,recordsize);
-            handles.x = dat.wavelength(dat.roix+1:dat.xdim+dat.roix);
             ind = 1:nofrecords;
             sliderVal = 1;
             set(handles.show, 'Value', sliderVal);
@@ -4261,6 +4261,10 @@ if ~isnumeric(filenameall)
             handles.current_dataA = zeros(nofrecords*nofrepes,recordsize);
             handles.current_dataC = zeros(nofrecords*nofrepes,recordsize);
             handles.current_dataB = zeros(nofrecords*nofrepes,recordsize);
+            WL_raw = h5read(file,'/Data/Spectrograph/Module Data/ROIs Wavelengths');
+            WL_wavelength = WL_raw.Wavelengths;
+            WL_data = WL_wavelength(1,1,1,1);
+            handles.x = (WL_data{1,1})';
             if sub == 2
                 [fitresult, ~] = splinesmooth((handles.x)', handles.nor);
                 handles.snor = (fitresult(handles.x))';
@@ -4270,10 +4274,6 @@ if ~isnumeric(filenameall)
             else
                 handles.current_dataD = reshape(spectra_singlecycle,[],recordsize);
             end              
-            WL_raw = h5read(file,'/Data/Spectrograph/Module Data/ROIs Wavelengths');
-            WL_wavelength = WL_raw.Wavelengths;
-            WL_data = WL_wavelength(1,1,1,1);
-            handles.x = (WL_data{1,1})';
             sliderVal = 1;
             set(handles.show, 'Value', sliderVal);
             show_Callback(handles.show, eventdata, handles);
