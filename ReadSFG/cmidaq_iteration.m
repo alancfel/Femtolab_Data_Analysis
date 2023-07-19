@@ -4431,7 +4431,7 @@ num_range = 1;
 defaultansrange = {'8'};
 gaterange = inputdlg(promptrange,dlg_title_gate,num_range,defaultansrange);
 tfilter = str2double(gaterange);
-handles.current_dataD = (filloutliers(handles.current_dataD',"nearest","mean","ThresholdFactor",tfilter))';%(filloutliers(handles.current_dataD',"nearest","mean"))';%filloutliers(handles.current_dataD,"linear");%
+handles.current_dataD = (filloutliers(handles.current_dataD',"spline","movmean",15,"ThresholdFactor",tfilter))';%(filloutliers(handles.current_dataD',"nearest","mean"))';%filloutliers(handles.current_dataD,"linear");%
 show_Callback(handles.show, eventdata, handles);
 set(handles.textStatus, 'string', sprintf('Outliers are removed'));
 
@@ -4443,4 +4443,4 @@ function Undofilter_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 handles.current_dataD = handles.current_dataA;
 show_Callback(handles.show, eventdata, handles);
-set(handles.textStatus, 'string', sprintf('Outliers are removed'));
+set(handles.textStatus, 'string', sprintf('Undo the outlier removal'));
