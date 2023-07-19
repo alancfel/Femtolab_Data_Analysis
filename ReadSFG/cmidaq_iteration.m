@@ -3929,7 +3929,7 @@ switch answer
     case 'Subtract and normalize'
         sub = 2;
         uiwait(msgbox('Please select the data background file','Select'));
-        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.txt';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
         filename = filenameall;
         file = fullfile(pathname, filename);
         dotall = regexp(filename,'\.');
@@ -3949,7 +3949,7 @@ switch answer
             uiwait(warndlg(sprintf('Error: Not the background spe file')));
         end
         uiwait(msgbox('Please select the reference file','Select'));
-        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.txt';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
         filename = filenameall;
         file = fullfile(pathname, filename);
         dotall = regexp(filename,'\.');
@@ -3973,7 +3973,7 @@ switch answer
             uiwait(warndlg(sprintf('Error: Not the spe file')));
         end
         uiwait(msgbox('Please select the reference file background','Select'));
-        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.txt';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
         filename = filenameall;
         file = fullfile(pathname, filename);
         dotall = regexp(filename,'\.');
@@ -4001,7 +4001,7 @@ switch answer
     case 'Subtract background only'
         sub = 1;
         uiwait(msgbox('Please select the background file','Select'));
-        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.txt';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
         filename = filenameall;
         file = fullfile(pathname, filename);
         dotall = regexp(filename,'\.');
@@ -4025,7 +4025,7 @@ switch answer
         disp('Donot substract the background.')
 end
 uiwait(msgbox('Please select the data file','Select'));
-[filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on'); % When open more than one file, please be carful the order is right in file explorer
+[filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.txt';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on'); % When open more than one file, please be carful the order is right in file explorer
 if ~isnumeric(filenameall)
     clear handles.current_dataA handles.current_dataB handles.current_dataC handles.current_dataD
     if iscell(filenameall)
@@ -4089,7 +4089,7 @@ if ~isnumeric(filenameall)
             %                     handles.current_dataD = [handles.current_dataD',(squeeze(spectra_singlecycle(i,:,:)))']';
         end
         [~,ind] = sort(attA);
-        handles.current_dataA = zeros(nofrecords*nofrepes,recordsize);
+        % handles.current_dataA = zeros(nofrecords*nofrepes,recordsize);
         handles.current_dataC = zeros(nofrecords*nofrepes,recordsize);
         handles.current_dataB = zeros(nofrecords*nofrepes,recordsize);
         if sub == 2            
@@ -4101,9 +4101,9 @@ if ~isnumeric(filenameall)
         else
             handles.current_dataD = reshape(handles.current_dataD,[],recordsize);
         end          
-        set(handles.show, 'Value', sliderVal);
-        show_Callback(handles.show, eventdata, handles);
         handles.current_dataA = handles.current_dataD;
+        set(handles.show, 'Value', sliderVal);
+        show_Callback(handles.show, eventdata, handles);       
     else
         fprintf('One file was selected\n')
         filename = filenameall;
@@ -4224,7 +4224,38 @@ if ~isnumeric(filenameall)
             ind = 1:nofrecords;
             sliderVal = 1;
             set(handles.show, 'Value', sliderVal);
-            show_Callback(handles.show, eventdata, handles);            
+            show_Callback(handles.show, eventdata, handles);    
+        elseif strcmp(filename(dot+1:end), 'txt')
+            fields = {'current_dataA','current_dataB','current_dataC','current_dataD'};
+            handles = rmfield(handles,fields);
+            QMSsignal = readtable(file,'FileType','text');
+            QMSYdata = QMSsignal{15:end,"Var2"};
+            [nofrecords, recordsize] = size(QMSYdata');
+            if sub == 2
+                uiwait(warndlg(sprintf('Error: .jdx does not need to normalize')));
+            elseif sub == 1
+                uiwait(warndlg(sprintf('Error: .jdx does not need to subtract background')));
+            else
+                handles.current_dataD = (QMSYdata');
+            end
+            nofrepes = 1;
+            nofwaveforms = 1;
+            nofcycle = 1;
+            step = 1:nofrecords;
+            selected_trigger = 2;
+            machename = 'None';
+            isChannelA = 0;
+            isChannelB = 0;
+            isChannelC = 0;
+            isChannelD = 1;
+            handles.current_dataA = handles.current_dataD;
+            handles.current_dataC = zeros(nofrecords*nofrepes,recordsize);
+            handles.current_dataB = zeros(nofrecords*nofrepes,recordsize);
+            handles.x = QMSsignal{15:end,"Var1"};
+            ind = 1:nofrecords;
+            sliderVal = 1;
+            set(handles.show, 'Value', sliderVal);
+            show_Callback(handles.show, eventdata, handles);             
         elseif strcmp(filename(dot+1:end), 'h5') || strcmp(filename(dot+1:end), 'hdf5') || strcmp(filename(dot+1:end), 'hdf')
             %                 info = h5info(file);
             nofrepes = 1;

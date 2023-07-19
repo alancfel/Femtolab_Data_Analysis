@@ -62,6 +62,26 @@ elseif strcmp(filename(dot+1:end), 'spe')
     sliderVal = 1;
 %     attdata = i:nofcycle:records*nofrepes*nofcycle;
     attA = zeros(1,nofrecords*nofrepes);
+elseif strcmp(filename(dot+1:end), 'txt')
+    QMSsignal = readtable(file,'FileType','text');
+    QMSYdata = QMSsignal{15:end,"Var2"};
+    [nofrecords, recordsize] = size(QMSYdata');
+    current_dataD = (QMSYdata)';
+    nofrepes = 1;
+    nofwaveforms = 1;
+    nofcycle = 1;
+    selected_trigger = 2;
+    machename = 'RGA-QMS';
+    isChannelA = 0;
+    isChannelB = 0;
+    isChannelC = 0;
+    isChannelD = 1;
+    current_dataA = QMSsignal{15:end,"Var1"};
+    current_dataC = zeros(nofrecords*nofrepes,recordsize);
+    current_dataB = zeros(nofrecords*nofrepes,recordsize);
+    sliderVal = 1;
+%     attdata = i:nofcycle:records*nofrepes*nofcycle;
+    attA = zeros(1,nofrecords*nofrepes);    
 elseif strcmp(filename(dot+1:end), 'hdf5') || strcmp(filename(dot+1:end), 'h5') || strcmp(filename(dot+1:end), 'hdf')
     info = h5info(file);
     if isempty(info.Datasets) %ismember ('Name',fieldnames(info.Datasets))
