@@ -3994,6 +3994,7 @@ switch answer
             if length(size(norbkg.int)) == 2
                 handles.nor = handles.datnor - norbkg.int;
             else
+                handles.nor = handles.datnor - (mean(squeeze(norbkg.int),2))';%data in row
             end   
         elseif strcmp(filename(dot+1:end), 'csv')
             norbkg = readmatrix(file);
