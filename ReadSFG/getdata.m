@@ -67,8 +67,8 @@ elseif strcmp(filename(dot+1:end), 'csv')
     [~, nofframe] = size((squeeze(dat(:,2))));
     if nofframe == 1
         [nofrecords, recordsize] = size(squeeze(dat(:,2)'));
-        current_dataD = squeeze(dat(:,2));
-        current_dataA = squeeze(dat(:,1));
+        current_dataD = squeeze(dat(:,2))';
+        current_dataA = squeeze(dat(:,1))';
     else
         [nofrecords, recordsize] = size(squeeze(dat(:,2))');
         current_dataD = squeeze(dat(:,2))';
