@@ -2780,6 +2780,7 @@ if dimension < 4
         assignin('base',sprintf('m_gate%d_backgroundfrom', mgate),backgroundmin);
         assignin('base',sprintf('m_gate%d_backgroundto', mgate),backgroundmax);
         assignin('base',sprintf('m_gate%d_msignal', mgate),msignal);
+        assignin('base',sprintf('m_gate%d_rawSFG', mgate),gatedataraw);
         %%
         h0 = figure('PaperSize',[8.267716 15.692913]);
         plot(laser_shot, gatedata/61.04);%,'-o','linewidth',2,'markersize',8);
