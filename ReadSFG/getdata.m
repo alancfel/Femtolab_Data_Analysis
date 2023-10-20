@@ -62,6 +62,32 @@ elseif strcmp(filename(dot+1:end), 'spe')
     sliderVal = 1;
 %     attdata = i:nofcycle:records*nofrepes*nofcycle;
     attA = zeros(1,nofrecords*nofrepes);
+elseif strcmp(filename(dot+1:end), 'csv')
+    dat = readmatrix(file);
+    [~, nofframe] = size((squeeze(dat(:,2))));
+    if nofframe == 1
+        [nofrecords, recordsize] = size(squeeze(dat(:,2)'));
+        current_dataD = squeeze(dat(:,2));
+        current_dataA = squeeze(dat(:,1));
+    else
+        [nofrecords, recordsize] = size(squeeze(dat(:,2))');
+        current_dataD = squeeze(dat(:,2))';
+        current_dataA = mean(dat(:,1),2);
+    end
+    nofrepes = 1;
+    nofwaveforms = 1;
+    nofcycle = 1;
+    selected_trigger = 2;
+    machename = 'PIMAX4';
+    isChannelA = 0;
+    isChannelB = 0;
+    isChannelC = 0;
+    isChannelD = 1;
+    current_dataC = zeros(nofrecords*nofrepes,recordsize);
+    current_dataB = zeros(nofrecords*nofrepes,recordsize);
+    sliderVal = 1;
+%     attdata = i:nofcycle:records*nofrepes*nofcycle;
+    attA = zeros(1,nofrecords*nofrepes);
 elseif strcmp(filename(dot+1:end), 'txt')
     QMSsignal = readtable(file,'FileType','text');
     QMSYdata = QMSsignal{15:end,"Var2"};

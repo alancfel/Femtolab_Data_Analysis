@@ -3930,7 +3930,7 @@ switch answer
     case 'Subtract and normalize'
         sub = 2;
         uiwait(msgbox('Please select the data background file','Select'));
-        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.txt';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.txt';'*.csv';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
         filename = filenameall;
         file = fullfile(pathname, filename);
         dotall = regexp(filename,'\.');
@@ -3938,6 +3938,9 @@ switch answer
         if strcmp(filename(dot+1:end), 'spe')
             datbkg = loadSPE(file);
             handles.backg = mean(squeeze(datbkg.int),2)';
+        elseif strcmp(filename(dot+1:end), 'csv')
+            datbkg = readmatrix(file);
+            handles.backg = mean(squeeze(datbkg(:,2)),2)';%data in a row
         elseif strcmp(filename(dot+1:end), 'h5')
             bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
             if length(size(squeeze(bkgdata_all))) == 2
@@ -3950,7 +3953,7 @@ switch answer
             uiwait(warndlg(sprintf('Error: Not the background spe file')));
         end
         uiwait(msgbox('Please select the reference file','Select'));
-        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.txt';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.txt';'*.csv';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
         filename = filenameall;
         file = fullfile(pathname, filename);
         dotall = regexp(filename,'\.');
@@ -3961,7 +3964,14 @@ switch answer
                 handles.datnor = datnor.int;
             else
                 handles.datnor = (mean(squeeze(datnor.int),2))';
-            end               
+            end    
+        elseif strcmp(filename(dot+1:end), 'csv')
+            datnor = readmatrix(file);
+            if length(size(datnor)) == 2
+                handles.datnor = datnor(:,2)';
+            else
+                handles.datnor = (mean(squeeze(datnor(:,2:end)),2))';
+            end      
         elseif strcmp(filename(dot+1:end), 'h5')
             bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
             if length(size(squeeze(bkgdata_all))) == 2
@@ -3974,7 +3984,7 @@ switch answer
             uiwait(warndlg(sprintf('Error: Not the spe file')));
         end
         uiwait(msgbox('Please select the reference file background','Select'));
-        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.txt';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.txt';'*.csv';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
         filename = filenameall;
         file = fullfile(pathname, filename);
         dotall = regexp(filename,'\.');
@@ -3984,7 +3994,13 @@ switch answer
             if length(size(norbkg.int)) == 2
                 handles.nor = handles.datnor - norbkg.int;
             else
-                handles.nor = handles.datnor - (mean(squeeze(norbkg.int),2))';
+            end   
+        elseif strcmp(filename(dot+1:end), 'csv')
+            norbkg = readmatrix(file);
+            if length(size(norbkg)) == 2
+                handles.nor = handles.datnor - norbkg(:,2)';%data in row
+            else
+                handles.nor = handles.datnor - (mean(squeeze(norbkg(:,2:end)),2))';
             end   
         elseif strcmp(filename(dot+1:end), 'h5')
             bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
@@ -4002,7 +4018,7 @@ switch answer
     case 'Subtract background only'
         sub = 1;
         uiwait(msgbox('Please select the background file','Select'));
-        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.txt';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.txt';'*.csv';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
         filename = filenameall;
         file = fullfile(pathname, filename);
         dotall = regexp(filename,'\.');
@@ -4010,6 +4026,9 @@ switch answer
         if strcmp(filename(dot+1:end), 'spe')
             datbkg = loadSPE(file);
             handles.backg = (mean(squeeze(datbkg.int),2))';
+        elseif strcmp(filename(dot+1:end), 'csv')
+            datbkg = readmatrix(file);
+            handles.backg = (mean(squeeze(datbkg(:,2:end)),2))';    
         elseif strcmp(filename(dot+1:end), 'h5')
             bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
             if length(size(squeeze(bkgdata_all))) == 2
@@ -4026,7 +4045,7 @@ switch answer
         disp('Donot substract the background.')
 end
 uiwait(msgbox('Please select the data file','Select'));
-[filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.txt';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on'); % When open more than one file, please be carful the order is right in file explorer
+[filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.txt';'*.csv';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on'); % When open more than one file, please be carful the order is right in file explorer
 if ~isnumeric(filenameall)
     clear handles.current_dataA handles.current_dataB handles.current_dataC handles.current_dataD
     if iscell(filenameall)
@@ -4183,6 +4202,52 @@ if ~isnumeric(filenameall)
             sliderVal = 1;
             set(handles.show, 'Value', sliderVal);
             show_Callback(handles.show, eventdata, handles);
+       elseif strcmp(filename(dot+1:end), 'csv')
+            fields = {'current_dataA','current_dataB','current_dataC','current_dataD'};
+            handles = rmfield(handles,fields);
+            dat = readmatrix(file);
+            handles.x = dat(:,1)'; %Please make sure that the data will be in a row not in column
+            [~, nofframe] = size((squeeze(dat(:,2))));
+            if nofframe == 1
+                [nofrecords, recordsize] = size(squeeze(dat(:,2)'));
+                if sub == 2
+                    [fitresult, ~] = splinesmooth((handles.x), handles.nor);
+                    handles.snor = (fitresult(handles.x))';
+                    handles.current_dataD = (squeeze(dat(:,2))'-handles.backg)./handles.snor;
+                elseif sub == 1
+                    handles.current_dataD = (squeeze(dat(:,2)))'-handles.backg;
+                else
+                    handles.current_dataD = (squeeze(dat(:,2)))';
+                end
+            else
+                [nofrecords, recordsize] = size((squeeze(dat(:,2:end)))');
+                if sub == 2
+                    [fitresult, ~] = splinesmooth((handles.x)', handles.nor);
+                    handles.snor = (fitresult(handles.x))';
+                    handles.current_dataD = ((squeeze(dat(:,2:end)))'-repmat(handles.backg,nofrecords,1))./repmat(handles.snor,nofrecords,1);
+                elseif sub == 1
+                    handles.current_dataD = (squeeze(dat(:,2:end)))'-repmat((handles.backg),nofrecords,1);
+                else
+                    handles.current_dataD = (squeeze(dat(:,2:end)))';
+                end               
+            end
+            nofrepes = 1;
+            nofwaveforms = length(dat);
+            nofcycle = 1;
+            step = 1:nofrecords;
+            selected_trigger = 2;
+            machename = 'None';
+            isChannelA = 0;
+            isChannelB = 0;
+            isChannelC = 0;
+            isChannelD = 1;
+            handles.current_dataA = handles.current_dataD;
+            handles.current_dataC = zeros(nofrecords*nofrepes,recordsize);
+            handles.current_dataB = zeros(nofrecords*nofrepes,recordsize);
+            ind = 1:nofrecords;
+            sliderVal = 1;
+            set(handles.show, 'Value', sliderVal);
+            show_Callback(handles.show, eventdata, handles);            
         elseif strcmp(filename(dot+1:end), 'jdx')
             fields = {'current_dataA','current_dataB','current_dataC','current_dataD'};
             handles = rmfield(handles,fields);
