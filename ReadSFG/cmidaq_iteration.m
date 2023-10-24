@@ -4212,7 +4212,7 @@ if ~isnumeric(filenameall)
             if nofframe == 1
                 [nofrecords, recordsize] = size(squeeze(dat(:,2)'));
                 if sub == 2
-                    [fitresult, ~] = splinesmooth((handles.x), handles.nor);
+                    [fitresult, ~] = splinesmooth(datnor(:,1)', handles.nor);
                     handles.snor = (fitresult(handles.x))';
                     handles.current_dataD = (squeeze(dat(:,2))'-handles.backg)./handles.snor;
                 elseif sub == 1
@@ -4223,7 +4223,7 @@ if ~isnumeric(filenameall)
             else
                 [nofrecords, recordsize] = size((squeeze(dat(:,2:end)))');
                 if sub == 2
-                    [fitresult, ~] = splinesmooth((handles.x)', handles.nor);
+                    [fitresult, ~] = splinesmooth(datnor(:,1)', handles.nor);
                     handles.snor = (fitresult(handles.x))';
                     handles.current_dataD = ((squeeze(dat(:,2:end)))'-repmat(handles.backg,nofrecords,1))./repmat(handles.snor,nofrecords,1);
                 elseif sub == 1
