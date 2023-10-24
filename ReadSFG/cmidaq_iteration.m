@@ -3930,7 +3930,7 @@ switch answer
     case 'Subtract and normalize'
         sub = 2;
         uiwait(msgbox('Please select the data background file','Select'));
-        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.txt';'*.csv';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        [filenameall, pathname] = uigetfile({'*.spe;*.h5;*.jdx;*.txt;*.csv;*.tif;*.hdf5'}, 'Open Data','MultiSelect','on');
         filename = filenameall;
         file = fullfile(pathname, filename);
         dotall = regexp(filename,'\.');
@@ -3953,7 +3953,7 @@ switch answer
             uiwait(warndlg(sprintf('Error: Not the background spe file')));
         end
         uiwait(msgbox('Please select the reference file','Select'));
-        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.txt';'*.csv';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        [filenameall, pathname] = uigetfile({'*.spe;*.h5;*.jdx;*.txt;*.csv;*.tif;*.hdf5'}, 'Open Data','MultiSelect','on');
         filename = filenameall;
         file = fullfile(pathname, filename);
         dotall = regexp(filename,'\.');
@@ -3984,7 +3984,7 @@ switch answer
             uiwait(warndlg(sprintf('Error: Not the spe file')));
         end
         uiwait(msgbox('Please select the reference file background','Select'));
-        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.txt';'*.csv';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        [filenameall, pathname] = uigetfile({'*.spe;*.h5;*.jdx;*.txt;*.csv;*.tif;*.hdf5'}, 'Open Data','MultiSelect','on');
         filename = filenameall;
         file = fullfile(pathname, filename);
         dotall = regexp(filename,'\.');
@@ -4019,7 +4019,7 @@ switch answer
     case 'Subtract background only'
         sub = 1;
         uiwait(msgbox('Please select the background file','Select'));
-        [filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.txt';'*.csv';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on');
+        [filenameall, pathname] = uigetfile({'*.spe;*.h5;*.jdx;*.txt;*.csv;*.tif;*.hdf5'}, 'Open Data','MultiSelect','on');
         filename = filenameall;
         file = fullfile(pathname, filename);
         dotall = regexp(filename,'\.');
@@ -4046,7 +4046,7 @@ switch answer
         disp('Donot substract the background.')
 end
 uiwait(msgbox('Please select the data file','Select'));
-[filenameall, pathname] = uigetfile({'*.spe';'*.h5';'*.jdx';'*.txt';'*.csv';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on'); % When open more than one file, please be carful the order is right in file explorer
+[filenameall, pathname] = uigetfile({'*.spe;*.h5;*.jdx;*.txt;*.csv;*.tif;*.hdf5'}, 'Open Data','MultiSelect','on'); % When open more than one file, please be carful the order is right in file explorer
 if ~isnumeric(filenameall)
     clear handles.current_dataA handles.current_dataB handles.current_dataC handles.current_dataD
     if iscell(filenameall)
