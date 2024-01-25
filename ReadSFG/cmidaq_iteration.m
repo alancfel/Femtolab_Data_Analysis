@@ -3937,7 +3937,11 @@ switch answer
         dot = max(dotall);
         if strcmp(filename(dot+1:end), 'spe')
             datbkg = loadSPE(file);
-            handles.backg = mean(squeeze(datbkg.int),2)';
+            if size((squeeze(datbkg.int)),1) == 1
+                handles.backg = squeeze(datbkg.int);%1x1023 dimension
+            else
+                handles.backg = mean(squeeze(datbkg.int),2)';%1x1023 dimension
+            end
         elseif strcmp(filename(dot+1:end), 'csv')
             datbkg = readmatrix(file);
             handles.backg = mean(squeeze(datbkg(:,2)),2)';%data in a row
@@ -4026,7 +4030,11 @@ switch answer
         dot = max(dotall);
         if strcmp(filename(dot+1:end), 'spe')
             datbkg = loadSPE(file);
-            handles.backg = (mean(squeeze(datbkg.int),2))';
+            if size((squeeze(datbkg.int)),1) == 1
+                handles.backg = squeeze(datbkg.int);
+            else
+                handles.backg = mean(squeeze(datbkg.int),2)';
+            end
         elseif strcmp(filename(dot+1:end), 'csv')
             datbkg = readmatrix(file);
             handles.backg = (mean(squeeze(datbkg(:,2:end)),2))';    
