@@ -1,4 +1,5 @@
-# Femtolab_Data_Analysis
+# Femtolab_Data_Analysis 
+&copy; 2015-2024 Zhipeng Huang
 
 ## App Documentation
 
@@ -41,6 +42,8 @@ Follow these steps to set up `Femtolab_Data_Analysis`:
 7. By clicking the `Copy Plot`, the displayed the SFG specrtrum will be poped up and can be copied and saved to other format.
 
 8. Select the `menu File -> Save rawdata workspace`, the displayed the SFG spectrum is saved to the MATLAB workspace for further analysis. 
+
+
 
 
 
