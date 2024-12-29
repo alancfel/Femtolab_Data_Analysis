@@ -1867,7 +1867,7 @@ global figurename;
 global filenumber;
 global settings;
 [filenameall, pathname] = uigetfile({'*.bin';'*.h5';'*.mat';'*.hdf5'}, 'Open Data','MultiSelect','on'); % When open more than one file, please be carful the order is right in file explorer
-if ~isempty(filenameall)
+if ~isnumeric(filenameall)
     clear handles.current_dataA handles.current_dataB handles.current_dataC handles.current_dataD
     if iscell(filenameall)
         fprintf('More than one file was selected\n')
@@ -2248,11 +2248,11 @@ if ~isempty(filenameall)
             end
         end
     end
-    % else
-    %     uiwait(warndlg(sprintf('Error: No file selected')));
     % handles.current_dataB = handles.current_dataD;
     set(handles.figure1, 'Name', filename);
     figurename = filename(1:(dotall(1)-1));
+else
+    uiwait(warndlg(sprintf('Error: No file selected')));
 end
 
 % --------------------------------------------------------------------
