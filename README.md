@@ -45,17 +45,19 @@ Follow these steps to set up `Femtolab_Data_Analysis`:
 
 9. By clicking the `Copy Plot` button, the displayed SFG specrtrum will be poped up and can be copied and saved to other format.
 
-10. By clicking the `Plot` button, you will be reminded to select four data tips `Click line to select four data tips: background is primary than gatedata, then press Return`. The four data tips are used to selecte two data regions, one is for signal (peak) region, another one is for background region. Once the four data tips are selected, press return button in keyboard. It will then plot how the background subtracted signal region changes as a function of the measurment series. The proceed data will be saved in the MATLAB workspace.
+10. By sliding the `Previous results` button, it will display the SFG/TOF specrtrum of a certain indexed frame.
 
-11. Select the `File -> Save rawdata workspace`, the displayed the SFG spectrum is saved to the MATLAB workspace for further analysis. 
+11. By clicking the `Plot` button, you will be reminded to select four data tips `Click line to select four data tips: background is primary than gatedata, then press Return`. The four data tips are used to selecte two data regions, one is for signal (peak) region, another one is for background region. Once the four data tips are selected, press return button in keyboard. It will then plot how the background subtracted signal region changes as a function of the measurment series. The proceed data will be saved in the MATLAB workspace.
 
-12. Select the menu panel `Plot -> Show all`, the displayed panel will show all the loaded spectrum in our figure. 
+12. Select the `File -> Save rawdata workspace`, the displayed the SFG spectrum is saved to the MATLAB workspace for further analysis. 
 
-13. Select the menu panel `Plot -> Filter outliers`, it can remove the outliers of the spectrum shown in the display panel.
+13. Select the menu panel `Plot -> Show all`, the displayed panel will show all the loaded spectrum in our figure. 
 
-14. Select the menu panel `Plot -> Undo Filtering`, it will undo the outliers removal of the spectrum shown in the display panel.
+14. Select the menu panel `Plot -> Filter outliers`, it can remove the outliers of the spectrum shown in the display panel.
 
-15. Click the `Help` menu panel will display the email address where the questions can be sented for feedback.
+15. Select the menu panel `Plot -> Undo Filtering`, it will undo the outliers removal of the spectrum shown in the display panel.
+
+16. Click the `Help` menu panel will display the email address where the questions can be sented for feedback.
 
 
 
