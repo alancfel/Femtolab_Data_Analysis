@@ -55,7 +55,7 @@ Follow these steps to set up `Femtolab_Data_Analysis`:
 
 14. Select the menu panel `Plot -> Undo Filtering`, it will undo the outliers removal of the spectrum shown in the display panel.
 
-15. The `Help` menu panel will display the email address where your questions can be sented for feedback.
+15. Click the `Help` menu panel will display the email address where the questions can be sented for feedback.
 
 
 
