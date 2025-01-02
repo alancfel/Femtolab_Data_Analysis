@@ -3,7 +3,7 @@
 
 ## App Documentation
 
-The **Femtolab_Data_Analysis** app is developed by [Dr. Zhipeng Huang](https://zhipeng-huang.netlify.app/). It is a MATLAB based grapic user interface (GUI) for quickly analysing and visualizing the sum-frequency generation (SFG) spectroscopy and time-of-flight (TOF) mass spectroscopy data.
+The [**Femtolab_Data_Analysis**](https://github.com/alancfel/Femtolab_Data_Analysis) app is developed by [Dr. Zhipeng Huang](https://zhipeng-huang.netlify.app/). It is a MATLAB based graphical user interface (GUI) for quickly analysing and visualizing the sum-frequency generation (SFG) spectroscopy and time-of-flight (TOF) mass spectroscopy data.
 
 The [**application documentation for the `main` branch**](https://github.com/alancfel/Femtolab_Data_Analysis) is automatically published on this project's *GitHub Page*. 
 
