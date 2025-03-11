@@ -3925,6 +3925,9 @@ global settings;
 answer = questdlg('Would you like to substract the background and normalize the spectrum?', ...
     'Substraction Menu', ...
     'Subtract and normalize','Subtract background only','No','No');
+roi = questdlg('Would you like to read ROI1 or ROI2?', ...
+    'ROI', ...
+    'ROI1','ROI2','ROI1');
 % Handle response
 switch answer
     case 'Subtract and normalize'
@@ -3946,7 +3949,14 @@ switch answer
             datbkg = readmatrix(file);
             handles.backg = mean(squeeze(datbkg(:,2)),2)';%data in a row
         elseif strcmp(filename(dot+1:end), 'h5')
-            bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
+            switch roi
+                case 'ROI1'
+                    bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
+                case 'ROI2'
+                    bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI2'));
+                otherwise
+                    bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
+            end
             if length(size(squeeze(bkgdata_all))) == 2
                 handles.backg = mean(squeeze(bkgdata_all));
             else
@@ -3977,7 +3987,14 @@ switch answer
                 handles.datnor = (mean(squeeze(datnor(:,2:end)),2))';
             end      
         elseif strcmp(filename(dot+1:end), 'h5')
-            bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
+            switch roi
+                case 'ROI1'
+                    bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
+                case 'ROI2'
+                    bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI2'));
+                otherwise
+                    bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
+            end            
             if length(size(squeeze(bkgdata_all))) == 2
                 handles.datnor = mean(squeeze(bkgdata_all));
             else
@@ -4008,7 +4025,14 @@ switch answer
                 handles.nor = handles.datnor - (mean(squeeze(norbkg(:,2:end)),2))';
             end   
         elseif strcmp(filename(dot+1:end), 'h5')
-            bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
+            switch roi
+                case 'ROI1'
+                    bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
+                case 'ROI2'
+                    bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI2'));
+                otherwise
+                    bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
+            end            
             if length(size(squeeze(bkgdata_all))) == 2
                 backg = mean(squeeze(bkgdata_all));
                 handles.nor = handles.datnor-backg;
@@ -4039,7 +4063,14 @@ switch answer
             datbkg = readmatrix(file);
             handles.backg = (mean(squeeze(datbkg(:,2:end)),2))';    
         elseif strcmp(filename(dot+1:end), 'h5')
-            bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
+            switch roi
+                case 'ROI1'
+                    bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
+                case 'ROI2'
+                    bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI2'));
+                otherwise
+                    bkgdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
+            end
             if length(size(squeeze(bkgdata_all))) == 2
                 handles.backg = mean(squeeze(bkgdata_all));
             else
@@ -4345,7 +4376,14 @@ if ~isnumeric(filenameall)
             handles.current_dataC = [];
             handles.current_dataD = [];
             attA = [];
-            rawdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
+            switch roi
+                case 'ROI1'
+                    rawdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
+                case 'ROI2'
+                    rawdata_all = double(h5read(file,'/Data/Camera/Image ROI2'));
+                otherwise
+                    rawdata_all = double(h5read(file,'/Data/Camera/Image ROI1'));
+            end            
             accum = squeeze(double(h5read(file,'/Data/Camera/Device Settings/Readout Control/Accumulations')));
             nofwaveforms = accum(1);
             spectra_singlecycle = squeeze(rawdata_all);
