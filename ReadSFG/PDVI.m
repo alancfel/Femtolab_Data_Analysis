@@ -182,7 +182,7 @@ global slider
 global sliderVal
 clear handles.dat
 % global dat
-[filenameall, pathname] = uigetfile({'*.bmp';'*.spe';'*.bin';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on'); % When open more than one file, please be carful the order is right in file explorer
+[filenameall, pathname] = uigetfile({'*.bmp;*.spe;*.bin;*.png;*.tiff;*.hdf5'}, 'Open Data','MultiSelect','on'); % When open more than one file, please be carful the order is right in file explorer
 if iscell(filenameall) || ischar(filenameall)
     if iscell(filenameall)
         fprintf('More than one file was selected\n')
@@ -201,6 +201,11 @@ if iscell(filenameall) || ischar(filenameall)
                 handles.dat(:,:,i) = double(imread(file));  
                 handles.t(i) = str2double(filename(dot-5:dot-1));
                 fprintf('Reading file: %s\n',filename);    
+            elseif strcmp(filename(dot+1:end), 'tiff')
+                handles.dat(:,:,i) = double(imread(file)); 
+                num = (regexp(filename, 'delay(\d+)_', 'tokens'));
+                handles.t(i) = str2double(num{1}{1});
+                fprintf('Reading file: %s\n',filename);     
                 else
                 uiwait(warndlg(sprintf('Error: Not the camera .bmp file')));
             end
@@ -220,6 +225,11 @@ if iscell(filenameall) || ischar(filenameall)
         elseif strcmp(filename(dot+1:end), 'bmp')
             handles.dat = double(imread(file));
             handles.t = str2double(filename(dot-5:dot-1));
+            fprintf('Reading file: %s\n',filename);
+        elseif strcmp(filename(dot+1:end), 'tiff')
+            handles.dat(:,:,i) = double(imread(file));
+            num = (regexp(filename, 'delay(\d+)_', 'tokens'));
+            handles.t(i) = str2double(num{1}{1});
             fprintf('Reading file: %s\n',filename);
         else
             uiwait(warndlg(sprintf('Error: Not the diffraction spe file')));
@@ -1760,7 +1770,7 @@ global slider
 global sliderVal
 clear handles.dat
 % global dat
-[filenameall, pathname] = uigetfile({'*.txt';'*.bmp';'*.spe';'*.bin';'*.png';'*.tif';'*.hdf5'}, 'Open Data','MultiSelect','on'); % When open more than one file, please be carful the order is right in file explorer
+[filenameall, pathname] = uigetfile({'*.txt;*.bmp;*.spe;*.bin;*.png;*.tiff;*.hdf5'}, 'Open Data','MultiSelect','on'); % When open more than one file, please be carful the order is right in file explorer
 if iscell(filenameall) || ischar(filenameall)
     if iscell(filenameall)
         fprintf('More than one file was selected\n')
@@ -1779,6 +1789,11 @@ if iscell(filenameall) || ischar(filenameall)
                 handles.dat(:,:,i) = double(imread(file));  
                 handles.t(i) = str2double(filename(dot-5:dot-1));
                 fprintf('Reading file: %s\n',filename);    
+            elseif strcmp(filename(dot+1:end), 'tiff')
+                handles.dat(:,:,i) = double(imread(file)); 
+                num = (regexp(filename, 'delay(\d+)_', 'tokens'));
+                handles.t(i) = str2double(num{1}{1});
+                fprintf('Reading file: %s\n',filename);                  
             else
                 uiwait(warndlg(sprintf('Error: Not the camera .bmp file')));
             end
