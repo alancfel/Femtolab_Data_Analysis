@@ -22,7 +22,7 @@ function varargout = PDVI(varargin)
 
 % Edit the above text to modify the response to help PDVI
 
-% Last Modified by GUIDE v2.5 24-Sep-2019 18:41:53
+% Last Modified by GUIDE v2.5 23-Sep-2025 15:46:57
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -674,12 +674,12 @@ function LatticeSpacing_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to LatticeSpacing (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
-set(hObject,'ColumnName',{'Ring Dia. (Å)',...
-    'd Spacing (Å)',...
+set(hObject,'ColumnName',{'Ring Dia. (Ã…)',...
+    'd Spacing (Ã…)',...
     'Index',...
     'Phase',...
     'Exp.-Ref. Dev. (A)',...
-    'Ring Dia. (1/Å)'})
+    'Ring Dia. (1/Ã…)'})
 
 
 % --- Executes during object creation, after setting all properties.
